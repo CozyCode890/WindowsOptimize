@@ -1,0 +1,362 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vm="clr-namespace:WindowsOptimize.ViewModels">
+
+    <!-- ═══ Màu ═══ -->
+    <Color x:Key="CBg">#0F1115</Color>
+    <SolidColorBrush x:Key="Bg" Color="#0F1115"/>
+    <SolidColorBrush x:Key="Side" Color="#13161C"/>
+    <SolidColorBrush x:Key="Surface" Color="#171B22"/>
+    <SolidColorBrush x:Key="Card" Color="#1C212A"/>
+    <SolidColorBrush x:Key="CardHover" Color="#232935"/>
+    <SolidColorBrush x:Key="CardChecked" Color="#1B2740"/>
+    <SolidColorBrush x:Key="Line" Color="#2A303C"/>
+    <SolidColorBrush x:Key="Text" Color="#E8ECF3"/>
+    <SolidColorBrush x:Key="Text2" Color="#9AA4B5"/>
+    <SolidColorBrush x:Key="Text3" Color="#6B7486"/>
+    <SolidColorBrush x:Key="Accent" Color="#4C8DFF"/>
+    <SolidColorBrush x:Key="AccentHover" Color="#6BA1FF"/>
+    <SolidColorBrush x:Key="AccentSoft" Color="#24406E"/>
+    <SolidColorBrush x:Key="Good" Color="#3CCB7F"/>
+    <SolidColorBrush x:Key="GoodSoft" Color="#173A2A"/>
+    <SolidColorBrush x:Key="Warn" Color="#F0B429"/>
+    <SolidColorBrush x:Key="WarnSoft" Color="#3D3218"/>
+    <SolidColorBrush x:Key="Bad" Color="#F0616D"/>
+    <SolidColorBrush x:Key="BadSoft" Color="#42202A"/>
+
+    <BooleanToVisibilityConverter x:Key="BoolVis"/>
+
+    <FontFamily x:Key="UiFont">Segoe UI Variable Text, Segoe UI</FontFamily>
+    <FontFamily x:Key="MonoFont">Cascadia Mono, Consolas</FontFamily>
+
+    <!-- ═══ Thanh cuộn mảnh ═══ -->
+    <Style x:Key="ThinThumb" TargetType="Thumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border CornerRadius="3" Background="#3A4252" Margin="2"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="MinWidth" Value="10"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Track x:Name="PART_Track" IsDirectionReversed="True">
+                        <Track.Thumb><Thumb Style="{StaticResource ThinThumb}"/></Track.Thumb>
+                    </Track>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Height" Value="10"/>
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Track x:Name="PART_Track" IsDirectionReversed="False">
+                                <Track.Thumb><Thumb Style="{StaticResource ThinThumb}"/></Track.Thumb>
+                            </Track>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ═══ Nút ═══ -->
+    <Style x:Key="BtnBase" TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        <Setter Property="Background" Value="{StaticResource Card}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Line}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="14,7"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="b" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="b" Property="Background" Value="{StaticResource CardHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="b" Property="Opacity" Value="0.45"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Btn" TargetType="Button" BasedOn="{StaticResource BtnBase}"/>
+
+    <Style x:Key="BtnPrimary" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+        <Setter Property="Background" Value="{StaticResource Accent}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="b" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="b" Property="Background" Value="{StaticResource AccentHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="b" Property="Background" Value="#2B3445"/>
+                            <Setter Property="Foreground" Value="{StaticResource Text3}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="BtnLink" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="6,2"/>
+        <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+        <Setter Property="FontSize" Value="12"/>
+    </Style>
+
+    <!-- Nút preset: ⭐ Của tôi / 👍 Đề xuất / Bỏ chọn -->
+    <Style x:Key="BtnChip" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+        <Setter Property="Padding" Value="12,5"/>
+        <Setter Property="Margin" Value="0,0,8,0"/>
+        <Setter Property="Background" Value="{StaticResource Surface}"/>
+    </Style>
+
+    <!-- ═══ Menu bên trái ═══ -->
+    <Style x:Key="Nav" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource Text2}"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Margin" Value="10,2"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="GroupName" Value="nav"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="b" CornerRadius="6" Padding="12,9" Background="Transparent">
+                        <Grid>
+                            <Border x:Name="bar" Width="3" CornerRadius="2" Background="{StaticResource Accent}"
+                                    HorizontalAlignment="Left" Margin="-12,2,0,2" Visibility="Hidden"/>
+                            <ContentPresenter/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="b" Property="Background" Value="#1A1F27"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="b" Property="Background" Value="#1E2531"/>
+                            <Setter TargetName="bar" Property="Visibility" Value="Visible"/>
+                            <Setter Property="Foreground" Value="{StaticResource Text}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ Checkbox thường (thanh dưới) ═══ -->
+    <Style x:Key="Check" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource Text2}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal" Background="Transparent">
+                        <Border x:Name="box" Width="18" Height="18" CornerRadius="4" BorderThickness="1.5"
+                                BorderBrush="#5A6475" Background="Transparent" VerticalAlignment="Center">
+                            <Path x:Name="tick" Data="M 3.5 9 L 7.5 13 L 14.5 5" Stroke="White" StrokeThickness="2"
+                                  Visibility="Collapsed" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+                        </Border>
+                        <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="box" Property="Background" Value="{StaticResource Accent}"/>
+                            <Setter TargetName="box" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                            <Setter TargetName="tick" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ Thẻ chọn (cả thẻ là 1 checkbox) ═══ -->
+    <Style x:Key="CardCheck" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <Border x:Name="card" Background="{StaticResource Card}" BorderBrush="{StaticResource Line}"
+                            BorderThickness="1" CornerRadius="8" Padding="12,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="box" Width="18" Height="18" CornerRadius="4" BorderThickness="1.5" Margin="0,1,10,0"
+                                    BorderBrush="#5A6475" VerticalAlignment="Top" Background="Transparent">
+                                <Path x:Name="tick" Data="M 3.5 9 L 7.5 13 L 14.5 5" Stroke="White" StrokeThickness="2"
+                                      Visibility="Collapsed" StrokeEndLineCap="Round" StrokeStartLineCap="Round"/>
+                            </Border>
+                            <ContentPresenter Grid.Column="1"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="card" Property="Background" Value="{StaticResource CardHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="card" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                            <Setter TargetName="card" Property="Background" Value="{StaticResource CardChecked}"/>
+                            <Setter TargetName="box" Property="Background" Value="{StaticResource Accent}"/>
+                            <Setter TargetName="box" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                            <Setter TargetName="tick" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="card" Property="Opacity" Value="0.55"/>
+                            <Setter TargetName="box" Property="Visibility" Value="Hidden"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Nội dung 1 thẻ: tên, mô tả, nhãn trạng thái -->
+    <DataTemplate x:Key="ItemCard">
+        <CheckBox Style="{StaticResource CardCheck}" Width="{Binding Tag, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                  Margin="0,0,10,10" IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding IsEnabled}"
+                  Visibility="{Binding Visible, Converter={StaticResource BoolVis}}" ToolTip="{Binding Tooltip}"
+                  ToolTipService.InitialShowDelay="700">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap" MaxHeight="36" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding Subtitle}" Foreground="{StaticResource Text2}" FontSize="12" Margin="0,2,0,0"
+                               TextWrapping="Wrap" MaxHeight="32" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+                <Border x:Name="badge" Grid.Column="1" CornerRadius="9" Padding="7,1" Margin="6,0,0,0" VerticalAlignment="Top"
+                        Background="{StaticResource AccentSoft}" Visibility="{Binding HasBadge, Converter={StaticResource BoolVis}}">
+                    <TextBlock x:Name="badgeText" Text="{Binding Badge}" FontSize="11" Foreground="#BFD4FF"/>
+                </Border>
+            </Grid>
+        </CheckBox>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding BadgeKind}" Value="{x:Static vm:BadgeKind.Success}">
+                <Setter TargetName="badge" Property="Background" Value="{StaticResource GoodSoft}"/>
+                <Setter TargetName="badgeText" Property="Foreground" Value="{StaticResource Good}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding BadgeKind}" Value="{x:Static vm:BadgeKind.Warn}">
+                <Setter TargetName="badge" Property="Background" Value="{StaticResource WarnSoft}"/>
+                <Setter TargetName="badgeText" Property="Foreground" Value="{StaticResource Warn}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding BadgeKind}" Value="{x:Static vm:BadgeKind.Danger}">
+                <Setter TargetName="badge" Property="Background" Value="{StaticResource BadSoft}"/>
+                <Setter TargetName="badgeText" Property="Foreground" Value="{StaticResource Bad}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding BadgeKind}" Value="{x:Static vm:BadgeKind.Busy}">
+                <Setter TargetName="badge" Property="Background" Value="{StaticResource WarnSoft}"/>
+                <Setter TargetName="badgeText" Property="Foreground" Value="{StaticResource Warn}"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!-- ═══ Ô tìm kiếm ═══ -->
+    <Style x:Key="Search" TargetType="TextBox">
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource Text}"/>
+        <Setter Property="Background" Value="{StaticResource Surface}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Line}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="b" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1" CornerRadius="6" Padding="10,6">
+                        <Grid>
+                            <TextBlock x:Name="ph" Text="🔍  Tìm app..." Foreground="{StaticResource Text3}" Visibility="Collapsed" IsHitTestVisible="False"/>
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="ph" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="b" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══ Thanh tiến độ ═══ -->
+    <Style TargetType="ProgressBar">
+        <Setter Property="Height" Value="6"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Grid>
+                        <Border x:Name="PART_Track" CornerRadius="3" Background="#262C38"/>
+                        <Border x:Name="PART_Indicator" CornerRadius="3" Background="{StaticResource Accent}" HorizontalAlignment="Left"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Thẻ thông tin trên trang Tổng quan -->
+    <Style x:Key="Panel" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource Surface}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource Line}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="Padding" Value="18,16"/>
+    </Style>
+
+    <Style x:Key="H1" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource Text}"/>
+    </Style>
+    <Style x:Key="Sub" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="{StaticResource Text2}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+    <Style x:Key="Label" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{StaticResource Text3}"/>
+    </Style>
+</ResourceDictionary>

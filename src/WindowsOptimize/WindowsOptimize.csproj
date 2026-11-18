@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    .NET Framework 4.8 có sẵn trong mọi bản Windows 10 1903+ / Windows 11
+    → ra đúng 1 file .exe, máy mới cài xong chạy luôn, không cần cài runtime.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>WindowsOptimize</AssemblyName>
+    <RootNamespace>WindowsOptimize</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <Version>1.0.0</Version>
+    <Product>WindowsOptimize</Product>
+    <AssemblyTitle>WindowsOptimize - thiết lập Windows sau khi cài</AssemblyTitle>
+    <Copyright>MIT License</Copyright>
+    <DebugType>embedded</DebugType>
+    <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Bản dev không đòi quyền admin, chỉ để xem giao diện: dotnet build -p:NoElevate=true -->
+  <PropertyGroup Condition="'$(NoElevate)' == 'true'">
+    <ApplicationManifest>app.asinvoker.manifest</ApplicationManifest>
+    <DefineConstants>$(DefineConstants);NOELEVATE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\guard.ps1" LogicalName="guard.ps1" />
+    <Resource Include="Assets\app.ico" />
+  </ItemGroup>
+
+</Project>

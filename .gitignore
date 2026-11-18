@@ -1,0 +1,10 @@
+bin/
+obj/
+.build/
+dist/
+.vs/
+*.user
+*.suo
+*.iso
+*.vhdx
+WindowsOptimize.profile.txt

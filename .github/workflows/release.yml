@@ -1,0 +1,55 @@
+name: Build & Release
+
+# Đẩy tag dạng v1.2.3 → tự build WindowsOptimize.exe và tạo GitHub Release.
+# Mỗi lần push lên main cũng build để kiểm tra (file exe nằm ở mục Artifacts của lần chạy).
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Set version from tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $v = '${{ github.ref_name }}'.TrimStart('v')
+          (Get-Content src/WindowsOptimize/WindowsOptimize.csproj) -replace '<Version>.*</Version>', "<Version>$v</Version>" |
+            Set-Content src/WindowsOptimize/WindowsOptimize.csproj
+
+      - name: Build
+        run: dotnet build src/WindowsOptimize/WindowsOptimize.csproj -c Release -o dist -nologo
+
+      - name: Clean output
+        shell: pwsh
+        run: |
+          Remove-Item dist/*.pdb, dist/*.config -ErrorAction SilentlyContinue
+          Copy-Item run.ps1 dist/
+          Get-ChildItem dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WindowsOptimize
+          path: dist/
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/WindowsOptimize.exe
+            dist/run.ps1
+          generate_release_notes: true
