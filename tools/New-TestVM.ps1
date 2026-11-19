@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Tạo VM Hyper-V Windows 11 sạch (cài tự động) để lấy danh sách app mới cài & thử WindowsOptimize.
 

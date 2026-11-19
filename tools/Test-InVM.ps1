@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Thử WindowsOptimize.exe trong VM (qua PowerShell Direct) và lấy báo cáo trước/sau.
 

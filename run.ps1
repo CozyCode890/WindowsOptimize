@@ -15,7 +15,7 @@ $dir = Join-Path $env:TEMP 'WindowsOptimize'
 $exe = Join-Path $dir 'WindowsOptimize.exe'
 New-Item -ItemType Directory -Force -Path $dir | Out-Null
 
-Write-Host 'Đang tải WindowsOptimize...' -ForegroundColor Cyan
+Write-Host 'Downloading WindowsOptimize...' -ForegroundColor Cyan
 Invoke-WebRequest -Uri $url -OutFile $exe -UseBasicParsing
 Unblock-File $exe -ErrorAction SilentlyContinue
 Start-Process -FilePath $exe -Verb RunAs
