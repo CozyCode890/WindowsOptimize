@@ -174,7 +174,7 @@ namespace WindowsOptimize.Catalog
                 },
 
                 T("priv.edge", GPriv, "Hạn chế Edge thu thập dữ liệu & quảng cáo",
-                    "Tắt mua sắm, gợi ý, gửi dữ liệu cá nhân hoá của Edge (Edge sẽ báo \"do tổ chức quản lý\")", false, false,
+                    "Tắt mua sắm, gợi ý, gửi dữ liệu cá nhân hoá của Edge (Edge sẽ báo \"do tổ chức quản lý\")", false, true,
                     Dword(POL + @"\Edge", "PersonalizationReportingEnabled", 0),
                     Dword(POL + @"\Edge", "DiagnosticData", 0),
                     Dword(POL + @"\Edge", "EdgeShoppingAssistantEnabled", 0),

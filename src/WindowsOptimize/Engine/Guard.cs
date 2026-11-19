@@ -162,8 +162,8 @@ namespace WindowsOptimize.Engine
     </CalendarTrigger>
     <EventTrigger>
       <Enabled>true</Enabled>
-      <Delay>PT5M</Delay>
       <Subscription>&lt;QueryList&gt;&lt;Query Id=""0"" Path=""System""&gt;&lt;Select Path=""System""&gt;*[System[Provider[@Name='Microsoft-Windows-WindowsUpdateClient'] and (EventID=19)]]&lt;/Select&gt;&lt;/Query&gt;&lt;/QueryList&gt;</Subscription>
+      <Delay>PT5M</Delay>
     </EventTrigger>
   </Triggers>
   <Principals>
