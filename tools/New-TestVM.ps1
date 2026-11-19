@@ -26,7 +26,8 @@ param(
     [int64]$DiskGB = 80,
     [string]$SwitchName = 'Default Switch',
     [string]$VMRoot,
-    [int]$TimeoutMinutes = 90
+    [int]$TimeoutMinutes = 90,
+    [int]$SettleMinutes = 8
 )
 $ErrorActionPreference = 'Stop'
 Import-Module Hyper-V -ErrorAction Stop
@@ -45,6 +46,10 @@ if (-not $IsoPath -or -not (Test-Path $IsoPath)) {
 Say "ISO: $IsoPath ($([math]::Round((Get-Item $IsoPath).Length/1GB,2)) GB)"
 
 if (Get-VM -Name $VMName -ErrorAction SilentlyContinue) { throw "VM '$VMName' đã tồn tại. Xoá đi hoặc dùng -VMName khác." }
+$availGB = (Get-Counter '\Memory\Available MBytes').CounterSamples[0].CookedValue / 1024
+if ($availGB -lt $MemoryGB + 0.5) {
+    throw ("Máy chỉ còn {0:N1} GB RAM khả dụng, VM cần {1} GB. Hãy tắt/Save VM khác hoặc đóng bớt app." -f $availGB, $MemoryGB)
+}
 if (-not (Get-VMSwitch -Name $SwitchName -ErrorAction SilentlyContinue)) { throw "Không có virtual switch '$SwitchName'." }
 
 if (-not $VMRoot) { $VMRoot = Join-Path (Get-VMHost).VirtualHardDiskPath $VMName }
@@ -146,8 +151,8 @@ while ((Get-Date) -lt $deadline) {
 }
 if (-not $ready) { throw "Quá $TimeoutMinutes phút mà chưa cài xong. Mở vmconnect để xem." }
 
-Say 'Chờ 5 phút để Windows tải/cài nốt app mặc định (Content Delivery, Store)...'
-Start-Sleep -Seconds 300
+Say "Chờ $SettleMinutes phút để Windows tải/cài nốt app mặc định (Content Delivery, Store)..."
+Start-Sleep -Seconds ($SettleMinutes * 60)
 
 Get-VMDvdDrive -VMName $VMName | Set-VMDvdDrive -Path $null
 Checkpoint-VM -VMName $VMName -SnapshotName 'Fresh install'

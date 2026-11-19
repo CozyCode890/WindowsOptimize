@@ -90,6 +90,11 @@
           <CommandLine>powershell.exe -NoProfile -Command "Set-WinHomeLocation -GeoId 251"</CommandLine>
           <Description>Vung: Viet Nam</Description>
         </SynchronousCommand>
+        <SynchronousCommand wcm:action="add">
+          <Order>2</Order>
+          <CommandLine>reg.exe add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f</CommandLine>
+          <Description>Chi cho VM test: phien PowerShell Direct cua tai khoan local co du quyen admin</Description>
+        </SynchronousCommand>
       </FirstLogonCommands>
     </component>
   </settings>
