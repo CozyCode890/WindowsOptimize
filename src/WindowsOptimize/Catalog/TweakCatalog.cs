@@ -24,6 +24,8 @@ namespace WindowsOptimize.Catalog
         public bool ExplorerRestart;
         public List<RegOp> Regs = new List<RegOp>();
         public List<SvcOp> Services = new List<SvcOp>();
+        /// <summary>Giá trị do bản cũ ghi sai/không còn tác dụng: xoá khi bật hoặc hoàn tác.</summary>
+        public List<RegOp> Obsolete = new List<RegOp>();
         public Func<bool> CustomDetect;
         public Action CustomApply;
         public Action CustomRevert;
@@ -120,7 +122,7 @@ namespace WindowsOptimize.Catalog
                 {
                     Id = "priv.telemetry", Group = GPriv, Recommended = true, Mine = true,
                     Name = "Giảm telemetry về mức tối thiểu",
-                    Desc = "Tắt dịch vụ thu thập dữ liệu (DiagTrack) và gửi chẩn đoán",
+                    Desc = "Tắt dịch vụ thu thập dữ liệu (DiagTrack). Bản Home/Pro chỉ hạ được xuống mức \"Required\"",
                     Regs =
                     {
                         Dword(POL + @"\Windows\DataCollection", "AllowTelemetry", 0),
@@ -184,16 +186,18 @@ namespace WindowsOptimize.Catalog
 
                 // ═══ AI ═════════════════════════════════════════════════════════════
                 T("ai.copilot", GAi, "Tắt Copilot",
-                    "Tắt Copilot của Windows và nút Copilot trên taskbar", true, true,
+                    "Policy chặn Copilot. Từ 24H2 Copilot là app riêng: gỡ thêm \"Copilot\" ở tab Gỡ app", true, true,
                     Dword(POL + @"\Windows\WindowsCopilot", "TurnOffWindowsCopilot", 1),
                     Dword(UPOL + @"\Windows\WindowsCopilot", "TurnOffWindowsCopilot", 1),
-                    Dword(ADV, "ShowCopilotButton", 0, optional: true)),
+                    Dword(ADV, "ShowCopilotButton", 0, optional: true),
+                    // Policy mới (WindowsCopilot.admx): Windows tự gỡ app Copilot nếu người dùng không mở nó
+                    Dword(POL + @"\Windows\WindowsAI", "RemoveMicrosoftCopilotApp", 1, optional: true),
+                    Dword(UPOL + @"\Windows\WindowsAI", "RemoveMicrosoftCopilotApp", 1, optional: true)),
 
                 T("ai.recall", GAi, "Tắt Recall (AI chụp màn hình định kỳ)",
                     "Không lưu ảnh chụp màn hình để AI phân tích", true, true,
                     Dword(POL + @"\Windows\WindowsAI", "DisableAIDataAnalysis", 1),
                     Dword(POL + @"\Windows\WindowsAI", "AllowRecallEnablement", 0),
-                    Dword(POL + @"\Windows\WindowsAI", "TurnOffSavingSnapshots", 1),
                     Dword(UPOL + @"\Windows\WindowsAI", "DisableAIDataAnalysis", 1)),
 
                 T("ai.clicktodo", GAi, "Tắt Click to Do",
@@ -201,9 +205,11 @@ namespace WindowsOptimize.Catalog
                     Dword(POL + @"\Windows\WindowsAI", "DisableClickToDo", 1),
                     Dword(UPOL + @"\Windows\WindowsAI", "DisableClickToDo", 1)),
 
-                T("ai.apps", GAi, "Tắt AI trong Paint & Notepad",
-                    "Ẩn Cocreator, Image Creator, Rewrite...", false, false,
-                    Dword(POL + @"\WindowsNotepad", "DisableAIFeatures", 1),
+                T("ai.apps", GAi, "Tắt AI trong Paint, Notepad & Settings",
+                    "Ẩn Cocreator, Image Creator, Rewrite..., trợ lý AI trong ô tìm của Settings", false, false,
+                    // Notepad.exe đọc HKLM\SOFTWARE\Policies\WindowsNotepad (không có "Microsoft")
+                    Dword(@"HKLM\SOFTWARE\Policies\WindowsNotepad", "DisableAIFeatures", 1),
+                    Dword(POL + @"\Windows\WindowsAI", "DisableSettingsAgent", 1),
                     Dword(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint", "DisableCocreator", 1),
                     Dword(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint", "DisableImageCreator", 1),
                     Dword(@"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Paint", "DisableGenerativeFill", 1),
@@ -214,9 +220,12 @@ namespace WindowsOptimize.Catalog
                 T("bar.widgets", GBar, "Tắt Widgets (tin tức, thời tiết)",
                     "Bỏ bảng tin MSN và icon thời tiết trên taskbar", true, true,
                     Dword(POL + @"\Dsh", "AllowNewsAndInterests", 0),
+                    Dword(POL + @"\Dsh", "DisableWidgetsBoard", 1, optional: true),
+                    Dword(POL + @"\Dsh", "DisableWidgetsOnLockScreen", 1, optional: true),
+                    // 23H2+: driver UCPD chặn ghi TaskbarDa → chỉ để dự phòng, policy ở trên mới là chính
                     Dword(ADV, "TaskbarDa", 0, optional: true)),
 
-                T("bar.chat", GBar, "Ẩn Chat/Teams trên taskbar", "", true, true,
+                T("bar.chat", GBar, "Ẩn Chat/Teams trên taskbar", "Chỉ có tác dụng trên 22H2/23H2 (24H2 đã bỏ nút Chat)", true, true,
                     Dword(ADV, "TaskbarMn", 0, optional: true),
                     Dword(POL + @"\Windows\Windows Chat", "ChatIcon", 3)),
 
@@ -234,7 +243,7 @@ namespace WindowsOptimize.Catalog
                 T("bar.highlights", GBar, "Tắt Search highlights",
                     "Bỏ hình minh hoạ, sự kiện trong ô tìm kiếm", true, true,
                     Dword(CU + @"\SearchSettings", "IsDynamicSearchBoxEnabled", 0),
-                    Dword(POL + @"\Windows\Windows Search", "EnableDynamicContentInSearchBox", 0)),
+                    Dword(POL + @"\Windows\Windows Search", "EnableDynamicContentInWSB", 0)),
 
                 T("bar.endtask", GBar, "Thêm \"End task\" khi chuột phải app trên taskbar",
                     "Tắt app bị treo nhanh, không cần Task Manager", true, true,
@@ -287,7 +296,10 @@ namespace WindowsOptimize.Catalog
 
                 T("sys.noautoreboot", GSys, "Không tự khởi động lại khi đang dùng máy",
                     "Windows Update chờ bạn tự restart", true, false,
-                    Dword(POL + @"\Windows\WindowsUpdate\AU", "NoAutoRebootWithLoggedOnUsers", 1)),
+                    Dword(POL + @"\Windows\WindowsUpdate\AU", "NoAutoRebootWithLoggedOnUsers", 1),
+                    // Theo ADMX: policy trên chỉ có hiệu lực khi "Configure Automatic Updates" = 4 (tự tải & lên lịch cài)
+                    Dword(POL + @"\Windows\WindowsUpdate\AU", "NoAutoUpdate", 0, optional: true),
+                    Dword(POL + @"\Windows\WindowsUpdate\AU", "AUOptions", 4, optional: true)),
 
                 T("sys.deliveryopt", GSys, "Tắt chia sẻ bản cập nhật qua Internet (P2P)",
                     "Không dùng mạng của bạn để gửi bản cập nhật cho máy khác", true, false,
@@ -306,9 +318,11 @@ namespace WindowsOptimize.Catalog
                 {
                     Id = "sys.hibernate", Group = GSys, Name = "Tắt ngủ đông (Hibernate)",
                     Desc = "Giải phóng vài GB ổ C (laptop nên giữ)",
-                    CustomDetect = () => Get(@"HKLM\SYSTEM\CurrentControlSet\Control\Power", "HibernateEnabled") is int v && v == 0,
-                    CustomApply = () => Shell.Run(System.IO.Path.Combine(Paths.System32, "powercfg.exe"), "/hibernate off"),
-                    CustomRevert = () => Shell.Run(System.IO.Path.Combine(Paths.System32, "powercfg.exe"), "/hibernate on"),
+                    // Máy mới cài thường chưa có HibernateEnabled, chỉ có HibernateEnabledDefault
+                    CustomDetect = () => (Get(@"HKLM\SYSTEM\CurrentControlSet\Control\Power", "HibernateEnabled")
+                                          ?? Get(@"HKLM\SYSTEM\CurrentControlSet\Control\Power", "HibernateEnabledDefault")) is int v && v == 0,
+                    CustomApply = () => PowerCfg("/hibernate off"),
+                    CustomRevert = () => PowerCfg("/hibernate on"),
                 },
 
                 new Tweak
@@ -316,11 +330,16 @@ namespace WindowsOptimize.Catalog
                     Id = "sys.highperf", Group = GSys, Name = "Dùng gói nguồn High performance",
                     Desc = "Cho máy bàn; laptop sẽ hao pin hơn",
                     CustomDetect = () => Shell.Run(System.IO.Path.Combine(Paths.System32, "powercfg.exe"), "/getactivescheme")
-                        .Output.IndexOf("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", StringComparison.OrdinalIgnoreCase) >= 0,
-                    CustomApply = () => Shell.Run(System.IO.Path.Combine(Paths.System32, "powercfg.exe"), "/setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"),
-                    CustomRevert = () => Shell.Run(System.IO.Path.Combine(Paths.System32, "powercfg.exe"), "/setactive 381b4222-f694-41f0-9685-ff5bb260df2e"),
+                        .Output.IndexOf(HighPerf, StringComparison.OrdinalIgnoreCase) >= 0,
+                    CustomApply = ApplyHighPerf,
+                    CustomRevert = () => PowerCfg("/setactive " + Balanced),
                 },
             };
+
+            // Giá trị bản cũ ghi sai tên/đường dẫn (không có tác dụng): dọn đi khi bật/hoàn tác
+            list.First(t => t.Id == "ai.apps").Obsolete.Add(Dword(POL + @"\WindowsNotepad", "DisableAIFeatures", 1));
+            list.First(t => t.Id == "ai.recall").Obsolete.Add(Dword(POL + @"\Windows\WindowsAI", "TurnOffSavingSnapshots", 1));
+            list.First(t => t.Id == "bar.highlights").Obsolete.Add(Dword(POL + @"\Windows\Windows Search", "EnableDynamicContentInSearchBox", 0));
 
             // Hoàn tác menu kiểu cũ = xoá hẳn khoá CLSID (khoá rỗng vẫn có thể giữ menu cũ)
             list.First(t => t.Id == "exp.classicmenu").CustomRevert =
@@ -329,6 +348,29 @@ namespace WindowsOptimize.Catalog
             foreach (var t in list)
                 t.ExplorerRestart = t.Group == GBar || t.Group == GExp || t.Id.StartsWith("ads.") || t.Id == "ai.copilot" || t.Id == "sys.dark";
             return list;
+        }
+
+        const string HighPerf = "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c";
+        const string Balanced = "381b4222-f694-41f0-9685-ff5bb260df2e";
+
+        static ProcResult PowerCfg(string args, bool throwOnError = true)
+        {
+            var r = Shell.Run(System.IO.Path.Combine(Paths.System32, "powercfg.exe"), args);
+            if (!r.Ok && throwOnError) throw new InvalidOperationException($"powercfg {args}: {r.Output.Trim()}");
+            return r;
+        }
+
+        /// <summary>
+        /// Máy Modern Standby (S0) ẩn gói High performance khỏi /list nhưng /setactive vẫn dùng được.
+        /// Một số máy OEM xoá hẳn gói này → thử tạo lại từ mẫu gốc, không được thì báo lỗi rõ ràng
+        /// (bản cũ bỏ qua mã lỗi nên báo "Bật" dù không đổi gì).
+        /// </summary>
+        static void ApplyHighPerf()
+        {
+            if (PowerCfg("/setactive " + HighPerf, false).Ok) return;
+            if (PowerCfg("/duplicatescheme " + HighPerf + " " + HighPerf, false).Ok && PowerCfg("/setactive " + HighPerf, false).Ok) return;
+            throw new InvalidOperationException(
+                "Máy này không có gói High performance. Dùng Settings > System > Power > Power mode = \"Best performance\".");
         }
     }
 }

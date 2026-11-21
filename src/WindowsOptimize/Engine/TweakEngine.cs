@@ -27,6 +27,7 @@ namespace WindowsOptimize.Engine
 
         public static void Apply(Tweak t)
         {
+            foreach (var r in t.Obsolete) Reg.DeleteValue(r.Path, r.Name);
             foreach (var r in t.Regs) Reg.Apply(r);
             foreach (var s in t.Services) SetService(s.Name, s.Start);
             t.CustomApply?.Invoke();
@@ -34,6 +35,7 @@ namespace WindowsOptimize.Engine
 
         public static void Revert(Tweak t)
         {
+            foreach (var r in t.Obsolete) Reg.DeleteValue(r.Path, r.Name);
             foreach (var r in t.Regs) Reg.Revert(r);
             foreach (var s in t.Services) SetService(s.Name, s.DefaultStart);
             t.CustomRevert?.Invoke();
